@@ -35,30 +35,17 @@ public class ReportItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_item);
 
-        // Check for permissions first
-        if (checkPermission()) {
-            initializeViews();
-        } else {
-            requestPermission();
-        }
-    }
-
-    private void initializeViews() {
-        // Initialize database handler
+        // Initialize database handler first
         dbHandler = new DatabaseHandler(this);
-
-        // Initialize views
+        
+        // Initialize RecyclerView and adapter without loading data
         recyclerView = findViewById(R.id.report_recycler_view);
         addReportFab = findViewById(R.id.add_report_fab);
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
-
-        // Set up RecyclerView
+        
         adapter = new ReportAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
-
-        // Load reports
-        loadReports();
 
         // Set up FAB click listener
         addReportFab.setOnClickListener(v -> {
@@ -66,30 +53,23 @@ public class ReportItemActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Set up bottom navigation
-        bottomNavigationView.setSelectedItemId(R.id.report_item);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.events) {
-                startActivity(new Intent(this, EventsActivity.class));
-            } else if (itemId == R.id.lost_items) {
-                startActivity(new Intent(this, LostItemsActivity.class));
-            } else if (itemId == R.id.found_items) {
-                startActivity(new Intent(this, FoundItemsActivity.class));
-            } else if (itemId == R.id.profile) {
-                startActivity(new Intent(this, UserProfileActivity.class));
-            }
-            finish();
-            return true;
-        });
+        // Check for permissions and load data if granted
+        if (checkPermission()) {
+            loadReports();
+        } else {
+            requestPermission();
+        }
     }
 
     private boolean checkPermission() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) 
-                == PackageManager.PERMISSION_GRANTED;
+        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        return result == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            Toast.makeText(this, "Storage permission is needed to show images", Toast.LENGTH_SHORT).show();
+        }
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                 STORAGE_PERMISSION_CODE);
@@ -100,10 +80,9 @@ public class ReportItemActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == STORAGE_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                initializeViews();
+                loadReports();
             } else {
                 Toast.makeText(this, "Storage permission is required to display images", Toast.LENGTH_LONG).show();
-                finish();
             }
         }
     }
