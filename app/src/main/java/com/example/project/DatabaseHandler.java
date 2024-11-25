@@ -52,16 +52,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS + "("
-                + KEY_USER_ID + " INTEGER PRIMARY KEY,"
-                + KEY_USERNAME + " TEXT,"
-                + KEY_EMAIL + " TEXT UNIQUE,"
-                + KEY_PASSWORD + " TEXT,"
-                + KEY_PHONE + " TEXT"
-                + ")";
-
         try {
-            String CREATE_REPORTS_TABLE = "CREATE TABLE " + TABLE_REPORTS + "("
+            // Create Users Table
+            String CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_USERS + "("
+                    + KEY_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + KEY_USERNAME + " TEXT,"
+                    + KEY_EMAIL + " TEXT UNIQUE,"
+                    + KEY_PASSWORD + " TEXT,"
+                    + KEY_PHONE + " TEXT"
+                    + ")";
+            db.execSQL(CREATE_USERS_TABLE);
+            Log.d("DatabaseHandler", "Users table created successfully");
+
+            // Create Reports Table
+            String CREATE_REPORTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_REPORTS + "("
                     + KEY_REPORT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + KEY_TITLE + " TEXT NOT NULL,"
                     + KEY_DESCRIPTION + " TEXT NOT NULL,"
@@ -69,24 +73,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     + KEY_IMAGE_PATH + " TEXT,"
                     + KEY_TIMESTAMP + " INTEGER"
                     + ")";
-
             db.execSQL(CREATE_REPORTS_TABLE);
             Log.d("DatabaseHandler", "Reports table created successfully");
-        } catch (Exception e) {
-            Log.e("DatabaseHandler", "Error creating reports table: " + e.getMessage());
-            e.printStackTrace();
-        }
 
-        db.execSQL(CREATE_USERS_TABLE);
-        String CREATE_EVENTS_TABLE = "CREATE TABLE " + TABLE_EVENTS + "("
-                + KEY_EVENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + KEY_EVENT_TITLE + " TEXT,"
-                + KEY_EVENT_DESCRIPTION + " TEXT,"
-                + KEY_EVENT_TIMESTAMP + " TEXT,"
-                + KEY_EVENT_ADMIN_ID + " INTEGER,"
-                + "FOREIGN KEY(" + KEY_EVENT_ADMIN_ID + ") REFERENCES " + TABLE_USERS + "(" + KEY_USER_ID + ")"
-                + ")";
-        db.execSQL(CREATE_EVENTS_TABLE);
+            // Create Events Table
+            String CREATE_EVENTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_EVENTS + "("
+                    + KEY_EVENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + KEY_EVENT_TITLE + " TEXT,"
+                    + KEY_EVENT_DESCRIPTION + " TEXT,"
+                    + KEY_EVENT_TIMESTAMP + " TEXT,"
+                    + KEY_EVENT_ADMIN_ID + " INTEGER,"
+                    + "FOREIGN KEY(" + KEY_EVENT_ADMIN_ID + ") REFERENCES " + TABLE_USERS + "(" + KEY_USER_ID + ")"
+                    + ")";
+            db.execSQL(CREATE_EVENTS_TABLE);
+            Log.d("DatabaseHandler", "Events table created successfully");
+
+        } catch (Exception e) {
+            Log.e("DatabaseHandler", "Error creating tables: " + e.getMessage(), e);
+        }
     }
 
     @Override
