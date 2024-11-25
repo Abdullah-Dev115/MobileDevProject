@@ -3,6 +3,7 @@ package com.example.project;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import com.example.project.R;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,22 +35,17 @@ public class MainActivity extends AppCompatActivity {
         
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            switch(item.getItemId()) {
-                case R.id.events:
-                    startActivity(new Intent(MainActivity.this, EventsActivity.class));
-                    break;
-                case R.id.lost_items:
-                    startActivity(new Intent(MainActivity.this, LostItemsActivity.class));
-                    break;
-                case R.id.found_items:
-                    startActivity(new Intent(MainActivity.this, FoundItemsActivity.class));
-                    break;
-                case R.id.report_item:
-                    startActivity(new Intent(MainActivity.this, ReportItemActivity.class));
-                    break;
-                case R.id.profile:
-                    startActivity(new Intent(MainActivity.this, UserProfileActivity.class));
-                    break;
+            int itemId = item.getItemId();
+            if (itemId == R.id.events) {
+                startActivity(new Intent(MainActivity.this, EventsActivity.class));
+            } else if (itemId == R.id.lost_items) {
+                startActivity(new Intent(MainActivity.this, LostItemsActivity.class));
+            } else if (itemId == R.id.found_items) {
+                startActivity(new Intent(MainActivity.this, FoundItemsActivity.class));
+            } else if (itemId == R.id.report_item) {
+                startActivity(new Intent(MainActivity.this, ReportItemActivity.class));
+            } else if (itemId == R.id.profile) {
+                startActivity(new Intent(MainActivity.this, UserProfileActivity.class));
             }
             return true;
         });
