@@ -5,13 +5,16 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class DatabaseHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "lostAndFoundDB";
+
 
     // Users table
     private static final String TABLE_USERS = "users";
@@ -47,17 +50,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_PHONE + " TEXT"
                 + ")";
 
-        String CREATE_REPORTS_TABLE = "CREATE TABLE " + TABLE_REPORTS + "("
-                + KEY_REPORT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + KEY_TITLE + " TEXT NOT NULL,"
-                + KEY_DESCRIPTION + " TEXT NOT NULL,"
-                + KEY_LOCATION + " TEXT NOT NULL,"
-                + KEY_IMAGE_PATH + " TEXT,"
-                + KEY_TIMESTAMP + " INTEGER"
-                + ")";
+        try {
+            String CREATE_REPORTS_TABLE = "CREATE TABLE " + TABLE_REPORTS + "("
+                    + KEY_REPORT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + KEY_TITLE + " TEXT NOT NULL,"
+                    + KEY_DESCRIPTION + " TEXT NOT NULL,"
+                    + KEY_LOCATION + " TEXT NOT NULL,"
+                    + KEY_IMAGE_PATH + " TEXT,"
+                    + KEY_TIMESTAMP + " INTEGER"
+                    + ")";
+
+            db.execSQL(CREATE_REPORTS_TABLE);
+            Log.d("DatabaseHandler", "Reports table created successfully");
+        } catch (Exception e) {
+            Log.e("DatabaseHandler", "Error creating reports table: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         db.execSQL(CREATE_USERS_TABLE);
-        db.execSQL(CREATE_REPORTS_TABLE);
     }
 
     @Override
@@ -105,9 +115,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_IMAGE_PATH, imagePath);
         values.put(KEY_TIMESTAMP, System.currentTimeMillis());
 
+        // Insert row
         long id = db.insert(TABLE_REPORTS, null, values);
         db.close();
-        return id;
+        return id;  // This was missing
     }
 
     public List<Report> getAllReports() {
