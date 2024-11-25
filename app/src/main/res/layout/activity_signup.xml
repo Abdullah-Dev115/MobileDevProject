@@ -17,7 +17,7 @@
 
     <EditText
         android:id="@+id/signup_email"
-        android:layout_width="match_match"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email"
         android:inputType="textEmailAddress"
