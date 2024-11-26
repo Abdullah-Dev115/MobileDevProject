@@ -48,18 +48,15 @@
                     android:id="@+id/report_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"/>
+
+                <TextView
+                    android:id="@+id/finder_contact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:maxLines="2"
-                    android:ellipsize="end"/>
+                    android:textStyle="italic"/>
             </LinearLayout>
         </LinearLayout>
-
-        <Button
-            android:id="@+id/found_item_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="I Found This Item"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -35,35 +35,26 @@ public class LostItemsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         
         // Set up bottom navigation
-        Menu menu = bottomNavigationView.getMenu();
-        MenuItem menuItem = menu.getItem(1); // Lost items is at index 1
-        menuItem.setChecked(true);
+        bottomNavigationView.setSelectedItemId(R.id.lost_items); // Set current tab as selected
         
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch(item.getItemId()) {
-                    case R.id.events:
-                        startActivity(new Intent(LostItemsActivity.this, MainActivity.class));
-                        finish();
-                        break;
-                    case R.id.lost_items:
-                        break;
-                    case R.id.found_items:
-                        startActivity(new Intent(LostItemsActivity.this, FoundItemsActivity.class));
-                        finish();
-                        break;
-                    case R.id.report_item:
-                        startActivity(new Intent(LostItemsActivity.this, ReportItemActivity.class));
-                        finish();
-                        break;
-                    case R.id.profile:
-                        startActivity(new Intent(LostItemsActivity.this, UserProfileActivity.class));
-                        finish();
-                        break;
-                }
-                return true;
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.events) {
+                startActivity(new Intent(LostItemsActivity.this, LostItemsActivity.class)); //EventsActivity
+                finish();
+            } else if (itemId == R.id.lost_items) {
+                return true; // Do nothing, we're already here
+            } else if (itemId == R.id.found_items) {
+                startActivity(new Intent(LostItemsActivity.this, FoundItemsActivity.class));
+                finish();
+            } else if (itemId == R.id.report_item) {
+                startActivity(new Intent(LostItemsActivity.this, ReportItemActivity.class));
+                finish();
+            } else if (itemId == R.id.profile) {
+                startActivity(new Intent(LostItemsActivity.this, UserProfileActivity.class));
+                finish();
             }
+            return true;
         });
         
         loadLostItems();

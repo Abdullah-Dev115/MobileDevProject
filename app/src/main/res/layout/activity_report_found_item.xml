@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/found_location_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Where did you find it?"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/found_description_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Additional details about finding the item"
+        android:minLines="3"
+        android:gravity="top"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/found_contact_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Your contact information"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/select_found_image_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Photo Evidence" />
+
+    <ImageView
+        android:id="@+id/found_image_preview"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:scaleType="centerCrop"/>
+
+    <Button
+        android:id="@+id/submit_found_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit Found Report"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>

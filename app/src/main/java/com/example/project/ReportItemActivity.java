@@ -38,7 +38,7 @@ public class ReportItemActivity extends AppCompatActivity {
         // Initialize database handler first
         dbHandler = new DatabaseHandler(this);
         
-        // Initialize RecyclerView and adapter without loading data
+        // Initialize views
         recyclerView = findViewById(R.id.report_recycler_view);
         addReportFab = findViewById(R.id.add_report_fab);
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
@@ -46,6 +46,29 @@ public class ReportItemActivity extends AppCompatActivity {
         adapter = new ReportAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+        // Set up bottom navigation
+        bottomNavigationView.setSelectedItemId(R.id.report_item); // Set current tab as selected
+        
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.events) {
+                startActivity(new Intent(ReportItemActivity.this, LostItemsActivity.class)); //Event
+                finish();
+            } else if (itemId == R.id.lost_items) {
+                startActivity(new Intent(ReportItemActivity.this, LostItemsActivity.class));
+                finish();
+            } else if (itemId == R.id.found_items) {
+                startActivity(new Intent(ReportItemActivity.this, FoundItemsActivity.class));
+                finish();
+            } else if (itemId == R.id.report_item) {
+                return true; // Do nothing, we're already here
+            } else if (itemId == R.id.profile) {
+                startActivity(new Intent(ReportItemActivity.this, UserProfileActivity.class));
+                finish();
+            }
+            return true;
+        });
 
         // Set up FAB click listener
         addReportFab.setOnClickListener(v -> {
