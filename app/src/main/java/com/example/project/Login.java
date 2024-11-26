@@ -23,9 +23,24 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+
         setContentView(R.layout.activity_login);
-        
+
         db = new DatabaseHandler(this);
+        // Check if the admin user already exists
+
+
+//        long result=db.addUser("Admin User", "admin", "admin", "987654321", true);
+//
+//        if (result > 0) {
+//            Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
+//
+//        } else {
+//            Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show();
+//        }
         initViews();
         
         loginBtn.setOnClickListener(v -> loginUser());
@@ -44,6 +59,7 @@ public class Login extends AppCompatActivity {
     }
     
     private void loginUser() {
+
         String emailText = email.getText().toString().trim();
         String passwordText = password.getText().toString().trim();
         
@@ -51,18 +67,27 @@ public class Login extends AppCompatActivity {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-        
+
         if (db.checkUser(emailText, passwordText)) {
+            // Assuming db.getUserId() method returns the userId based on the email
+            int userId = db.getUserId(emailText); // Retrieve userId based on the email
+
             Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
+
+            // Save login state, user email, and userId
             SharedPreferences loginPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
             SharedPreferences.Editor editor = loginPreferences.edit();
             editor.putBoolean("isLoggedIn", true);
             editor.putString("userEmail", emailText);
+            editor.putInt("userId", userId);  // Save the userId
             editor.apply();
+
+            // Start MainActivity
             startActivity(new Intent(Login.this, MainActivity.class));
             finish();
         } else {
             Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show();
         }
     }
+
 }
