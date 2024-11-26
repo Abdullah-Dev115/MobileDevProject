@@ -23,9 +23,24 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+
         setContentView(R.layout.activity_login);
-        
+
         db = new DatabaseHandler(this);
+        // Check if the admin user already exists
+
+
+//        long result=db.addUser("Admin User", "admin", "admin", "987654321", true);
+//
+//        if (result > 0) {
+//            Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
+//
+//        } else {
+//            Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show();
+//        }
         initViews();
         
         loginBtn.setOnClickListener(v -> loginUser());
@@ -44,6 +59,7 @@ public class Login extends AppCompatActivity {
     }
     
     private void loginUser() {
+
         String emailText = email.getText().toString().trim();
         String passwordText = password.getText().toString().trim();
         
