@@ -1,5 +1,6 @@
 package com.example.project;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.widget.LinearLayout;
@@ -13,6 +14,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.List;
 public class EventsActivity extends AppCompatActivity {
@@ -20,14 +23,21 @@ public class EventsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private EventsAdapter adapter;
     private List<Event> eventList;
+    FloatingActionButton addEventFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_events);
 
+
         recyclerView = findViewById(R.id.recyclerView_events);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        addEventFab=findViewById(R.id.add_event_fb);
+        addEventFab.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddEvent.class);
+            startActivity(intent);
+        });
 
         // Initialize event list and adapter
         eventList = new ArrayList<>();
@@ -36,6 +46,7 @@ public class EventsActivity extends AppCompatActivity {
 
         // Load events (add dummy data or fetch from DB)
         loadEvents();
+
     }
 
     private void loadEvents() {
