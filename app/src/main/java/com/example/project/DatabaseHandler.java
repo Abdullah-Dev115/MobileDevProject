@@ -1,11 +1,16 @@
 package com.example.project;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,15 +153,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String selection = KEY_USER_ID + " = ?";
         String[] selectionArgs = { String.valueOf(userId) };
 
-        Cursor cursor = db.query(TABLE_USERS, columns, selection, selectionArgs, null, null, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            int isAdmin = cursor.getInt(cursor.getColumnIndex(KEY_IS_ADMIN));
-            cursor.close();
-            return isAdmin == 1;  // If is_admin is 1, then user is an admin
+        Cursor cursor = null;
+        try {
+            cursor = db.query(TABLE_USERS, columns, selection, selectionArgs, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int isAdmin = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_IS_ADMIN));
+                return isAdmin == 1;  // If is_admin is 1, user is an admin
+            }
+        } catch (Exception e) {
+            e.printStackTrace();  // Log any unexpected exceptions
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        cursor.close();
-        return false;
+        return false;  // Default to false if no record is found or an error occurs
     }
+
     public List<Event> getAllEvents() {
         List<Event> eventList = new ArrayList<Event>();
         // Select All Query
@@ -266,4 +279,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
         return reportList;
     }
+    public int getUserId(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] columns = { KEY_USER_ID };  // Assuming KEY_USER_ID is the column for the user ID
+        String selection = KEY_EMAIL + " = ?";  // Assuming KEY_USER_EMAIL is the column for email
+        String[] selectionArgs = { email };
+
+        Cursor cursor = db.query(TABLE_USERS, columns, selection, selectionArgs, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int userId = cursor.getInt(cursor.getColumnIndex(KEY_USER_ID));  // Retrieve the userId
+            cursor.close();
+            return userId;
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return -1;  // Return -1 if no user is found, meaning the email is invalid
+    }
+
+
 }

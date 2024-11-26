@@ -67,18 +67,27 @@ public class Login extends AppCompatActivity {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-        
+
         if (db.checkUser(emailText, passwordText)) {
+            // Assuming db.getUserId() method returns the userId based on the email
+            int userId = db.getUserId(emailText); // Retrieve userId based on the email
+
             Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
+
+            // Save login state, user email, and userId
             SharedPreferences loginPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
             SharedPreferences.Editor editor = loginPreferences.edit();
             editor.putBoolean("isLoggedIn", true);
             editor.putString("userEmail", emailText);
+            editor.putInt("userId", userId);  // Save the userId
             editor.apply();
+
+            // Start MainActivity
             startActivity(new Intent(Login.this, MainActivity.class));
             finish();
         } else {
             Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show();
         }
     }
+
 }
