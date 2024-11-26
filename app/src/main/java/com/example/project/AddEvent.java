@@ -3,20 +3,16 @@ package com.example.project;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.view.View;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
-import com.example.project.Event;
-import com.example.project.R;
-
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class AddEvent extends AppCompatActivity {
 
@@ -24,7 +20,6 @@ public class AddEvent extends AppCompatActivity {
     private Button selectDateButton, selectTimeButton, submitEventButton;
     private TextView eventTimestampDisplay;
     private String selectedDate = "", selectedTime = "";
-    private List<Event> eventList = new ArrayList<>();  // This will store events for now
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +34,35 @@ public class AddEvent extends AppCompatActivity {
         submitEventButton = findViewById(R.id.submit_event_button);
         eventTimestampDisplay = findViewById(R.id.event_timestamp_display);
 
+        // Setup Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
         // Set listeners for buttons
         selectDateButton.setOnClickListener(v -> showDatePicker());
         selectTimeButton.setOnClickListener(v -> showTimePicker());
-
-        // Submit event
         submitEventButton.setOnClickListener(v -> submitEvent());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            setResult(RESULT_OK);  // Notify that an event was added
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_OK);  // Notify the previous activity to refresh
+        super.onBackPressed();
     }
 
     private void showDatePicker() {
@@ -53,7 +71,6 @@ public class AddEvent extends AppCompatActivity {
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        // Create DatePickerDialog
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, yearSelected, monthOfYear, dayOfMonth) -> {
             selectedDate = String.format("%02d-%02d-%04d", dayOfMonth, monthOfYear + 1, yearSelected);
             eventTimestampDisplay.setText("Selected Timestamp: " + selectedDate + " " + selectedTime);
@@ -67,7 +84,6 @@ public class AddEvent extends AppCompatActivity {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
 
-        // Create TimePickerDialog
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minuteOfHour) -> {
             selectedTime = String.format("%02d:%02d", hourOfDay, minuteOfHour);
             eventTimestampDisplay.setText("Selected Timestamp: " + selectedDate + " " + selectedTime);
@@ -77,32 +93,22 @@ public class AddEvent extends AppCompatActivity {
     }
 
     private void submitEvent() {
-        // Get data from the input fields
         String title = eventTitleInput.getText().toString().trim();
         String description = eventDescriptionInput.getText().toString().trim();
 
-        // Check if the fields are empty
         if (title.isEmpty() || description.isEmpty() || selectedDate.isEmpty() || selectedTime.isEmpty()) {
             Toast.makeText(this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Create a new Event object
         String timestamp = selectedDate + " " + selectedTime;
         Event newEvent = new Event(title, description, timestamp);
         DatabaseHandler dbHandler = new DatabaseHandler(this);
-        // Add the event to the list (or save to a database, etc.)
-        long id = dbHandler.addEvent(newEvent);
-        eventList.add(newEvent);
+        dbHandler.addEvent(newEvent);
 
-        // Display success message
         Toast.makeText(this, "Event added successfully!", Toast.LENGTH_SHORT).show();
 
-        // Optionally, clear the fields after submission
-        eventTitleInput.setText("");
-        eventDescriptionInput.setText("");
-        eventTimestampDisplay.setText("Selected Timestamp: ");
-        selectedDate = "";
-        selectedTime = "";
+        setResult(RESULT_OK);  // Notify the previous activity to refresh
+        finish();
     }
 }

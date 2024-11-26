@@ -1,60 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:id="@+id/main"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
-    <!-- Event Title -->
-    <EditText
-        android:id="@+id/event_title_input"
+    <!-- Toolbar at the top -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Event Title"
-        android:layout_marginBottom="16dp" />
+        android:background="?attr/colorPrimary"
+        android:title="Add Event"
+        android:titleTextColor="@android:color/white"
+        android:elevation="4dp" />
 
-    <!-- Event Description -->
-    <EditText
-        android:id="@+id/event_description_input"
+    <!-- Main content of the activity -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Event Description"
-        android:minLines="3"
-        android:gravity="top"
-        android:layout_marginBottom="16dp" />
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
-    <!-- Event Date Picker -->
-    <Button
-        android:id="@+id/select_date_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Select Date" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <!-- Event Time Picker -->
-    <Button
-        android:id="@+id/select_time_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Select Time"
-        android:layout_marginTop="8dp" />
+            <!-- Event Title -->
+            <EditText
+                android:id="@+id/event_title_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Event Title"
+                android:layout_marginBottom="16dp" />
 
-    <!-- Display Timestamp -->
-    <TextView
-        android:id="@+id/event_timestamp_display"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Selected Timestamp: "
-        android:textColor="#555"
-        android:layout_marginTop="16dp" />
+            <!-- Event Description -->
+            <EditText
+                android:id="@+id/event_description_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Event Description"
+                android:minLines="3"
+                android:gravity="top"
+                android:layout_marginBottom="16dp" />
 
-    <!-- Submit Button -->
-    <Button
-        android:id="@+id/submit_event_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Submit Event"
-        android:layout_marginTop="24dp" />
+            <!-- Event Date Picker -->
+            <Button
+                android:id="@+id/select_date_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Date" />
 
+            <!-- Event Time Picker -->
+            <Button
+                android:id="@+id/select_time_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Time"
+                android:layout_marginTop="8dp" />
+
+            <!-- Display Timestamp -->
+            <TextView
+                android:id="@+id/event_timestamp_display"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Selected Timestamp: "
+                android:textColor="#555"
+                android:layout_marginTop="16dp" />
+
+            <!-- Submit Button -->
+            <Button
+                android:id="@+id/submit_event_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Submit Event"
+                android:layout_marginTop="24dp" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

@@ -8,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -38,7 +39,7 @@ public class EventsActivity extends AppCompatActivity {
         addEventFab=findViewById(R.id.add_event_fb);
         addEventFab.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddEvent.class);
-            startActivity(intent);
+            startActivityForResult(intent,1);
         });
 
         // Initialize event list and adapter
@@ -49,6 +50,14 @@ public class EventsActivity extends AppCompatActivity {
         // Load events (add dummy data or fetch from DB)
         loadEvents();
 
+    }
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            // Refresh the event list
+            loadEvents();  // Call the method to reload events from the database
+        }
     }
 
     private void loadEvents() {
