@@ -36,11 +36,10 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Report report = reportList.get(position);
-
         holder.titleText.setText(report.getTitle());
-        holder.locationText.setText(report.getLocation());
         holder.descriptionText.setText(report.getDescription());
-
+        holder.locationText.setText(report.getLocation());
+        
         if (report.getImageUrl() != null) {
             try {
                 Uri imageUri = Uri.parse(report.getImageUrl());
@@ -64,18 +63,18 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView titleText;
-        TextView locationText;
         TextView descriptionText;
+        TextView locationText;
 
-        ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.report_image);
             titleText = itemView.findViewById(R.id.report_title);
-            locationText = itemView.findViewById(R.id.report_location);
             descriptionText = itemView.findViewById(R.id.report_description);
+            locationText = itemView.findViewById(R.id.report_location);
         }
     }
 }

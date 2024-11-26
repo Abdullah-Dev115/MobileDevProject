@@ -1,18 +1,19 @@
 package com.example.project;
 
 public class Report {
-    private String id;
+    private long id;
     private String title;
     private String description;
     private String location;
     private String imageUrl;
+    private String category;
     private long timestamp;
 
     // Empty constructor required for SQLite
     public Report() {
     }
 
-    public Report(String id, String title, String description, String location, String imageUrl) {
+    public Report(long id, String title, String description, String location, String imageUrl) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -22,11 +23,11 @@ public class Report {
     }
 
     // Getters and Setters
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 

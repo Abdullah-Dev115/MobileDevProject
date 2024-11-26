@@ -196,7 +196,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Report report = new Report();
-                report.setId(cursor.getString(cursor.getColumnIndex(KEY_REPORT_ID)));
+                report.setId(cursor.getLong(cursor.getColumnIndex(KEY_REPORT_ID)));
                 report.setTitle(cursor.getString(cursor.getColumnIndex(KEY_TITLE)));
                 report.setDescription(cursor.getString(cursor.getColumnIndex(KEY_DESCRIPTION)));
                 report.setLocation(cursor.getString(cursor.getColumnIndex(KEY_LOCATION)));
