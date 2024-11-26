@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 public class EventsActivity extends AppCompatActivity {
-
+    DatabaseHandler databaseHandler;
     private RecyclerView recyclerView;
     private EventsAdapter adapter;
     private List<Event> eventList;
@@ -29,6 +30,7 @@ public class EventsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_events);
+        databaseHandler = new DatabaseHandler(this);
 
 
         recyclerView = findViewById(R.id.recyclerView_events);
@@ -51,11 +53,19 @@ public class EventsActivity extends AppCompatActivity {
 
     private void loadEvents() {
         // Dummy data for testing
-        eventList.add(new Event("Meeting", "Discuss project progress", "2024-11-25 10:00 AM"));
-        eventList.add(new Event("Workshop", "Learn Android Development", "2024-11-26 02:00 PM"));
-        eventList.add(new Event("Conference", "Tech Innovations 2024", "2024-11-27 09:00 AM"));
+        List<Event> events = databaseHandler.getAllEvents();
 
-        // Notify the adapter of data changes
-        adapter.notifyDataSetChanged();
+        // Clear the list before adding new events
+        eventList.clear();
+
+        // Add the fetched events to the eventList
+        if (events != null && !events.isEmpty()) {
+            eventList.addAll(events);
+            // Notify the adapter of data changes
+            adapter.notifyDataSetChanged();
+        } else {
+            Toast.makeText(this, "No events available", Toast.LENGTH_SHORT).show();
+        }
     }
-}
+
+    }
