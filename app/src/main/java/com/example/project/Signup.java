@@ -63,7 +63,7 @@ public class Signup extends AppCompatActivity {
             return;
         }
         
-        long result = db.addUser(userNameText, emailText, passwordText, phoneText,false);
+        long result = db.addUser(userNameText, emailText, passwordText, phoneText,true); //true for admin, false for user
         if (result > 0) {
             Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(Signup.this, Login.class));

@@ -73,8 +73,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     + KEY_IS_ADMIN + " INTEGER"  // Default to 0 (not an admin)
                     + ")";
 
+            // Create Events table
+            String CREATE_EVENTS_TABLE = "CREATE TABLE " + TABLE_EVENTS + "("
+                    + KEY_EVENT_ID + " INTEGER PRIMARY KEY,"
+                    + KEY_EVENT_TITLE + " TEXT,"
+                    + KEY_EVENT_DESCRIPTION + " TEXT,"
+                    + KEY_EVENT_TIMESTAMP + " TEXT,"
+                    + KEY_EVENT_ADMIN_ID + " INTEGER"
+                    + ")";
 
             db.execSQL(CREATE_USERS_TABLE);
+            db.execSQL(CREATE_EVENTS_TABLE);
             Log.d("DatabaseHandler", "Users table created successfully");
 
             // Create Reports Table
@@ -98,20 +107,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-//        db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
-//        db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
-//        onCreate(db);
+        // Drop all existing tables
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
+        
+        // Recreate all tables
+        onCreate(db);
     }
-//    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-//        if (oldVersion < 2) {
-//            // Add the is_admin column if upgrading from version 1
-//            db.execSQL("ALTER TABLE " + TABLE_USERS + " ADD COLUMN " + KEY_IS_ADMIN + " INTEGER DEFAULT 0");
-//        }
-//        db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
-//        onCreate(db);
-//    }
 
     public long addUser(String name, String email, String password, String phone, boolean isAdmin) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -362,18 +365,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String selection = KEY_EMAIL + " = ? AND " + KEY_PASSWORD + " = ?";
         String[] selectionArgs = {email, password};
         
+        User user = null;
         Cursor cursor = db.query(TABLE_USERS, columns, selection, selectionArgs, null, null, null);
         
-        User user = null;
         if (cursor != null && cursor.moveToFirst()) {
-            user = new User(
-                cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_ID)),
-                cursor.getString(cursor.getColumnIndexOrThrow(KEY_USERNAME)),
-                cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL)),
-                cursor.getString(cursor.getColumnIndexOrThrow(KEY_PASSWORD)),
-                cursor.getString(cursor.getColumnIndexOrThrow(KEY_PHONE)),
-                cursor.getInt(cursor.getColumnIndexOrThrow(KEY_IS_ADMIN)) == 1
-            );
+            user = new User();
+            user.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_ID)));
+            user.setUsername(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USERNAME)));
+            user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL)));
+            user.setPhone(cursor.getString(cursor.getColumnIndexOrThrow(KEY_PHONE)));
+            user.setIsAdmin(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_IS_ADMIN)) == 1);
             cursor.close();
         }
         

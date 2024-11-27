@@ -5,21 +5,25 @@ public class Event {
     private String title;
     private String description;
     private String timestamp;
+    private int adminId;
 
-    // Constructor
-    public Event(){}
-    public Event(int id, String title, String description, String timestamp) {
-        this.id = id;
+    // Default constructor
+    public Event() {}
+
+    // Constructor for creating new events
+    public Event(String title, String description, String timestamp) {
         this.title = title;
         this.description = description;
         this.timestamp = timestamp;
     }
 
-    // Overloaded Constructor for new Events (without ID)
-    public Event(String title, String description, String timestamp) {
+    // Constructor with all fields
+    public Event(int id, String title, String description, String timestamp, int adminId) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.timestamp = timestamp;
+        this.adminId = adminId;
     }
 
     // Getters and Setters
@@ -53,5 +57,13 @@ public class Event {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public int getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(int adminId) {
+        this.adminId = adminId;
     }
 }

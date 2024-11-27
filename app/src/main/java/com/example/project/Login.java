@@ -60,7 +60,6 @@ public class Login extends AppCompatActivity {
     }
     
     private void loginUser() {
-
         String emailText = email.getText().toString().trim();
         String passwordText = password.getText().toString().trim();
         
@@ -68,22 +67,18 @@ public class Login extends AppCompatActivity {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        handleLogin(emailText, passwordText);
-    }
-
-    private void handleLogin(String email, String password) {
+        
         DatabaseHandler dbHandler = new DatabaseHandler(this);
-        User user = dbHandler.getUser(email, password);
+        User user = dbHandler.getUser(emailText, passwordText);
         
         if (user != null) {
-            // Save user data to SharedPreferences
-            saveUserDataToPrefs(user.getUsername(), user.getEmail(), user.getPhone());
-            
-            // Debug log
-            Log.d("Login", "User found - Username: " + user.getUsername() + 
-                          ", Email: " + user.getEmail() + 
-                          ", Phone: " + user.getPhone());
+            // Save login state and user info
+            SharedPreferences loginPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = loginPreferences.edit();
+            editor.putBoolean("isLoggedIn", true);
+            editor.putInt("userId", user.getId());
+            editor.putString("userEmail", emailText);
+            editor.apply();
             
             // Start MainActivity
             startActivity(new Intent(Login.this, MainActivity.class));
