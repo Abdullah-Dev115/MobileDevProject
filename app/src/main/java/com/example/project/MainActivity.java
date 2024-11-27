@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.events) {
-                startActivity(new Intent(MainActivity.this, LostItemsActivity.class)); //EventsActivity
+                startActivity(new Intent(MainActivity.this, EventsActivity.class)); //EventsActivity
             } else if (itemId == R.id.lost_items) {
                 startActivity(new Intent(MainActivity.this, LostItemsActivity.class));
             } else if (itemId == R.id.found_items) {

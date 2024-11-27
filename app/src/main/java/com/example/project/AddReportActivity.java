@@ -63,32 +63,34 @@ public class AddReportActivity extends AppCompatActivity {
     }
 
     private void submitReport() {
-        try {
-            String title = titleInput.getText().toString().trim();
-            String description = descriptionInput.getText().toString().trim();
-            String location = locationInput.getText().toString().trim();
+        String title = titleInput.getText().toString();
+        String description = descriptionInput.getText().toString();
+        String location = locationInput.getText().toString();
+        String imagePath = imageUri != null ? imageUri.toString() : null;
 
-            // Validate inputs
-            if (title.isEmpty() || description.isEmpty() || location.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        if (title.isEmpty() || description.isEmpty() || location.isEmpty()) {
+            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-            // Save image path if image was selected
-            String imagePath = imageUri != null ? imageUri.toString() : null;
+        // Create a new Report object with isFound set to false
+        Report report = new Report(
+                title,
+                location,
+                description,
+                "",  // No contact info for lost items
+                imagePath,
+                false  // This is a lost item
+        );
 
-            // Save to database
-            long id = dbHandler.addReport(title, description, location, imagePath);
-
-            if (id != -1) {
-                Toast.makeText(this, "Report added successfully", Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(this, "Error adding report", Toast.LENGTH_SHORT).show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        // Save to database using the Report object version
+        long id = dbHandler.addReport(report);
+        
+        if (id != -1) {
+            Toast.makeText(this, "Report submitted successfully", Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            Toast.makeText(this, "Error submitting report", Toast.LENGTH_SHORT).show();
         }
     }
 }

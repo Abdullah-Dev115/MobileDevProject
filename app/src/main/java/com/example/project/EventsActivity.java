@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //package com.example.project;
 //
 //import android.graphics.Typeface;
@@ -84,7 +83,6 @@
 //    }
 //
 //}
-=======
 package com.example.project;
 
 import android.content.Context;
@@ -189,4 +187,3 @@ public class EventsActivity extends AppCompatActivity {
     }
 
     }
->>>>>>> origin/main

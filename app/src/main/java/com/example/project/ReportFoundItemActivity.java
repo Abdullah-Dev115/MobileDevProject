@@ -3,6 +3,7 @@ package com.example.project;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -50,30 +51,51 @@ public class ReportFoundItemActivity extends AppCompatActivity {
     }
 
     private void submitFoundReport() {
+        Log.d("ReportFoundItemActivity", "Original Item ID: " + originalItemId);
+        
         String location = locationFoundInput.getText().toString();
         String description = descriptionInput.getText().toString();
         String contactInfo = contactInfoInput.getText().toString();
-
+    
         if (location.isEmpty() || description.isEmpty() || contactInfo.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // Create found report and save to database
+    
+        // First mark the original item as found
+        if (originalItemId != null && !originalItemId.isEmpty()) {
+            try {
+                long itemId = Long.parseLong(originalItemId);
+                Log.d("ReportFoundItemActivity", "Attempting to mark item as found: " + itemId);
+                boolean updateSuccess = dbHandler.markItemAsFound(itemId);
+                Log.d("ReportFoundItemActivity", "Update success: " + updateSuccess);
+                if (!updateSuccess) {
+                    Toast.makeText(this, "Error updating original item", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                Log.e("ReportFoundItemActivity", "Invalid item ID: " + originalItemId);
+                Toast.makeText(this, "Error updating original item", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+    
+        // Then create the found report with isFound set to true
         Report foundReport = new Report(
-                "Found Item Report", // title
-                location,
-                description,
-                contactInfo,
-                imageUri != null ? imageUri.toString() : null,
-                true // indicates this is a found report
-        );
-
-        dbHandler.addReport(foundReport);
-
-        // Move the original report to found items
-        dbHandler.markItemAsFound(originalItemId);
-
+            "Found Item Report",
+            location,
+            description,  // These parameters were in wrong order
+            contactInfo,
+            imageUri != null ? imageUri.toString() : null,
+            true
+    );
+    
+        long newReportId = dbHandler.addReport(foundReport);
+        if (newReportId == -1) {
+            Toast.makeText(this, "Error creating found report", Toast.LENGTH_SHORT).show();
+            return;
+        }
+    
         Toast.makeText(this, "Found report submitted successfully", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(this, FoundItemsActivity.class));
         finish();
@@ -83,12 +105,17 @@ public class ReportFoundItemActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            imageUri = data.getData();
-            if (imageUri != null) {
-                // Take persistable URI permission
-                final int takeFlags = data.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
-                getContentResolver().takePersistableUriPermission(imageUri, takeFlags);
-                imagePreview.setImageURI(imageUri);
+            try {
+                imageUri = data.getData();
+                if (imageUri != null) {
+                    // Take persistable URI permission
+                    final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                    getContentResolver().takePersistableUriPermission(imageUri, takeFlags);
+                    imagePreview.setImageURI(imageUri);
+                }
+            } catch (SecurityException e) {
+                Log.e("ReportFoundItemActivity", "Security Exception: " + e.getMessage());
+                Toast.makeText(this, "Unable to access image", Toast.LENGTH_SHORT).show();
             }
         }
     }

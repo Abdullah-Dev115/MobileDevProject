@@ -63,7 +63,10 @@ public class LostFragment extends Fragment {
     }
 
     private void loadLostItems() {
-        List<Report> reports = dbHandler.getAllReports();
+        if (dbHandler == null) {
+            dbHandler = new DatabaseHandler(requireContext());
+        }
+        List<Report> reports = dbHandler.getAllReports(false);  // false for unfound items
         adapter.setReports(reports);
     }
 

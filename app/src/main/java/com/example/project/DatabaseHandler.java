@@ -20,14 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
-<<<<<<< HEAD
-    private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "lostAndFoundManager";
-=======
-    private static final int DATABASE_VERSION = 3;
+
+
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "lostAndFoundDB";
 
->>>>>>> origin/main
 
     // Users table
     private static final String TABLE_USERS = "users";
@@ -36,8 +33,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_EMAIL = "email";
     private static final String KEY_PASSWORD = "password";
     private static final String KEY_PHONE = "phone";
-<<<<<<< HEAD
-=======
+
     private static final String KEY_IS_ADMIN = "is_admin";
     // Events table
     private static final String TABLE_EVENTS = "events";
@@ -47,7 +43,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_EVENT_TIMESTAMP = "timestamp";
     private static final String KEY_EVENT_ADMIN_ID = "admin_id";
 
->>>>>>> origin/main
+
 
     // Reports table
     private static final String TABLE_REPORTS = "reports";
@@ -132,48 +128,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
         return result;
     }
-<<<<<<< HEAD
-//    public long addEvent(Event event) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues values = new ContentValues();
-//
-//        values.put(KEY_EVENT_TITLE, event.getTitle());
-//        values.put(KEY_EVENT_DESCRIPTION, event.getDescription());
-//        values.put(KEY_EVENT_TIMESTAMP, event.getTimestamp());
-//
-//        long id = db.insert(TABLE_EVENTS, null, values);
-//        db.close();
-//        return id;
-//    }
-//    public List<Event> getAllEvents() {
-//        List<Event> eventList = new ArrayList<Event>();
-//        // Select All Query
-//        String selectQuery = "SELECT * FROM " + TABLE_EVENTS;
-//
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        Cursor cursor = db.rawQuery(selectQuery, null);
-//
-//        // Looping through all rows and adding to list
-//        if (cursor.moveToFirst()) {
-//            do {
-//                Event event = new Event();
-//                event.setId(Integer.parseInt(cursor.getString(0))); // ID
-//                event.setTitle(cursor.getString(1));                // Title
-//                event.setDescription(cursor.getString(2));          // Description
-//                event.setTimestamp(cursor.getString(3));            // Timestamp
-//
-//                // Adding event to list
-//                eventList.add(event);
-//            } while (cursor.moveToNext());
-//        }
-//
-//        // Closing the cursor
-//        cursor.close();
-//
-//        // Return event list
-//        return eventList;
-//    }
-=======
+
 
     public long addEvent(Event event) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -238,7 +193,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Return event list
         return eventList;
     }
->>>>>>> origin/main
 
 
 
@@ -297,12 +251,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return userList;
     }
 
-    public List<Report> getAllReports() {
+    public List<Report> getAllReports(boolean isFound) {
+        Log.d("DatabaseHandler", "Getting all reports with isFound = " + isFound);
         List<Report> reportList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_REPORTS + " ORDER BY " + KEY_TIMESTAMP + " DESC";
+        String selectQuery = "SELECT * FROM " + TABLE_REPORTS + 
+                            " WHERE " + KEY_IS_FOUND + " = ?" +
+                            " ORDER BY " + KEY_TIMESTAMP + " DESC";
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{isFound ? "1" : "0"});
 
         if (cursor.moveToFirst()) {
             do {
@@ -312,57 +269,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 report.setDescription(cursor.getString(cursor.getColumnIndex(KEY_DESCRIPTION)));
                 report.setLocation(cursor.getString(cursor.getColumnIndex(KEY_LOCATION)));
                 report.setImageUrl(cursor.getString(cursor.getColumnIndex(KEY_IMAGE_PATH)));
+                report.setContactInfo(cursor.getString(cursor.getColumnIndex(KEY_CONTACT_INFO)));
+                report.setFound(cursor.getInt(cursor.getColumnIndex(KEY_IS_FOUND)) == 1);
                 report.setTimestamp(cursor.getLong(cursor.getColumnIndex(KEY_TIMESTAMP)));
-
                 reportList.add(report);
             } while (cursor.moveToNext());
         }
-
         cursor.close();
         db.close();
         return reportList;
     }
-<<<<<<< HEAD
 
-    public void markItemAsFound(String itemId) {
+    public boolean markItemAsFound(long itemId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_IS_FOUND, 1); // 1 indicates the item is found
-
+    
+        Log.d("DatabaseHandler", "About to update item with ID: " + itemId);
+        
         // Update the record
-        db.update(TABLE_REPORTS,
+        int rowsAffected = db.update(TABLE_REPORTS,
                 values,
                 KEY_REPORT_ID + " = ?",
-                new String[]{itemId});
+                new String[]{String.valueOf(itemId)});
+                
+        Log.d("DatabaseHandler", "Rows affected by update: " + rowsAffected);
         db.close();
-    }
-
-    public List<Report> getAllReports(boolean isFound) {
-        List<Report> reportList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_REPORTS +
-                " WHERE " + KEY_IS_FOUND + " = " + (isFound ? "1" : "0") +
-                " ORDER BY " + KEY_TIMESTAMP + " DESC";
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                Report report = new Report();
-                report.setId(cursor.getLong(0));
-                report.setTitle(cursor.getString(1));
-                report.setDescription(cursor.getString(2));
-                report.setLocation(cursor.getString(3));
-                report.setImageUrl(cursor.getString(4));
-                report.setFound(cursor.getInt(5) == 1);
-                report.setTimestamp(cursor.getLong(6));
-                reportList.add(report);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        db.close();
-        return reportList;
+        return rowsAffected > 0;
     }
 
     public long addReport(Report report) {
@@ -374,16 +307,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_LOCATION, report.getLocation());
         values.put(KEY_IMAGE_PATH, report.getImageUrl());
         values.put(KEY_CONTACT_INFO, report.getContactInfo());
-        values.put(KEY_IS_FOUND, report.isFound() ? 1 : 0);
-        values.put(KEY_TIMESTAMP, report.getTimestamp());
+        values.put(KEY_IS_FOUND, report.isFound() ? 1 : 0);  // Convert boolean to int
+        values.put(KEY_TIMESTAMP, System.currentTimeMillis());
 
-        // Insert row and get the id
+        Log.d("DatabaseHandler", "Adding report - Title: " + report.getTitle() + 
+              ", isFound: " + report.isFound() + 
+              ", Location: " + report.getLocation());
+
         long id = db.insert(TABLE_REPORTS, null, values);
+        
+        // Verify the insertion
+        if (id != -1) {
+            Cursor cursor = db.query(TABLE_REPORTS,
+                    new String[]{KEY_IS_FOUND},
+                    KEY_REPORT_ID + " = ?",
+                    new String[]{String.valueOf(id)},
+                    null, null, null);
+            
+            if (cursor.moveToFirst()) {
+                int isFoundValue = cursor.getInt(cursor.getColumnIndex(KEY_IS_FOUND));
+                Log.d("DatabaseHandler", "Verified isFound value in DB: " + isFoundValue);
+            }
+            cursor.close();
+        }
+        
         db.close();
-
         return id;
     }
-=======
     public int getUserId(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         String[] columns = { KEY_USER_ID };  // Assuming KEY_USER_ID is the column for the user ID
@@ -405,6 +355,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return -1;  // Return -1 if no user is found, meaning the email is invalid
     }
 
+    public User getUser(String email, String password) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        
+        String[] columns = {KEY_USER_ID, KEY_USERNAME, KEY_EMAIL, KEY_PHONE, KEY_PASSWORD, KEY_IS_ADMIN};
+        String selection = KEY_EMAIL + " = ? AND " + KEY_PASSWORD + " = ?";
+        String[] selectionArgs = {email, password};
+        
+        Cursor cursor = db.query(TABLE_USERS, columns, selection, selectionArgs, null, null, null);
+        
+        User user = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            user = new User(
+                cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_ID)),
+                cursor.getString(cursor.getColumnIndexOrThrow(KEY_USERNAME)),
+                cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL)),
+                cursor.getString(cursor.getColumnIndexOrThrow(KEY_PASSWORD)),
+                cursor.getString(cursor.getColumnIndexOrThrow(KEY_PHONE)),
+                cursor.getInt(cursor.getColumnIndexOrThrow(KEY_IS_ADMIN)) == 1
+            );
+            cursor.close();
+        }
+        
+        return user;
+    }
 
->>>>>>> origin/main
 }

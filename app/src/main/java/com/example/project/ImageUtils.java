@@ -16,7 +16,7 @@ public class ImageUtils {
                 );
                 imageView.setImageURI(imageUri);
             } catch (SecurityException e) {
-                // Handle error - maybe set a default imag
+                // Handle error - maybe set a default image
                 imageView.setImageResource(R.drawable.ic_launcher_background);
             }
         } else {

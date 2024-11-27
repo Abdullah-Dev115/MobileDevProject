@@ -2,6 +2,7 @@ package com.example.project;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import androidx.annotation.NonNull;
@@ -40,7 +41,7 @@ public class LostItemsActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.events) {
-                startActivity(new Intent(LostItemsActivity.this, LostItemsActivity.class)); //EventsActivity
+                startActivity(new Intent(LostItemsActivity.this, EventsActivity.class));
                 finish();
             } else if (itemId == R.id.lost_items) {
                 return true; // Do nothing, we're already here
@@ -67,7 +68,9 @@ public class LostItemsActivity extends AppCompatActivity {
     }
 
     private void loadLostItems() {
-        List<Report> reports = dbHandler.getAllReports();
+        Log.d("LostItemsActivity", "Loading lost items");
+        List<Report> reports = dbHandler.getAllReports(false);  // false for unfound items
+        Log.d("LostItemsActivity", "Loaded " + reports.size() + " lost items");
         adapter.setReports(reports);
     }
 }

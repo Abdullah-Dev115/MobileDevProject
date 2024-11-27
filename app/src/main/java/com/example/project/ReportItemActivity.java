@@ -119,7 +119,7 @@ public class ReportItemActivity extends AppCompatActivity {
     }
 
     private void loadReports() {
-        List<Report> reports = dbHandler.getAllReports();
+        List<Report> reports = dbHandler.getAllReports(false);
         adapter.setReports(reports);
     }
 }

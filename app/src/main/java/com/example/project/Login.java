@@ -3,6 +3,7 @@ package com.example.project;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -68,26 +69,37 @@ public class Login extends AppCompatActivity {
             return;
         }
 
-        if (db.checkUser(emailText, passwordText)) {
-            // Assuming db.getUserId() method returns the userId based on the email
-            int userId = db.getUserId(emailText); // Retrieve userId based on the email
+        handleLogin(emailText, passwordText);
+    }
 
-            Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-
-            // Save login state, user email, and userId
-            SharedPreferences loginPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
-            SharedPreferences.Editor editor = loginPreferences.edit();
-            editor.putBoolean("isLoggedIn", true);
-            editor.putString("userEmail", emailText);
-            editor.putInt("userId", userId);  // Save the userId
-            editor.apply();
-
+    private void handleLogin(String email, String password) {
+        DatabaseHandler dbHandler = new DatabaseHandler(this);
+        User user = dbHandler.getUser(email, password);
+        
+        if (user != null) {
+            // Save user data to SharedPreferences
+            saveUserDataToPrefs(user.getUsername(), user.getEmail(), user.getPhone());
+            
+            // Debug log
+            Log.d("Login", "User found - Username: " + user.getUsername() + 
+                          ", Email: " + user.getEmail() + 
+                          ", Phone: " + user.getPhone());
+            
             // Start MainActivity
             startActivity(new Intent(Login.this, MainActivity.class));
             finish();
         } else {
             Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void saveUserDataToPrefs(String username, String email, String phone) {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("username", username);
+        editor.putString("email", email);
+        editor.putString("phone", phone);
+        editor.apply();
     }
 
 }
