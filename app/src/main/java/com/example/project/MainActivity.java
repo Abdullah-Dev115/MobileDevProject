@@ -31,24 +31,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         
-        setContentView(R.layout.activity_main);
-        
-        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.events) {
-                startActivity(new Intent(MainActivity.this, EventsActivity.class)); //EventsActivity
-            } else if (itemId == R.id.lost_items) {
-                startActivity(new Intent(MainActivity.this, LostItemsActivity.class));
-            } else if (itemId == R.id.found_items) {
-                startActivity(new Intent(MainActivity.this, FoundItemsActivity.class));
-            } else if (itemId == R.id.report_item) {
-                startActivity(new Intent(MainActivity.this, ReportItemActivity.class));
-            } else if (itemId == R.id.profile) {
-                startActivity(new Intent(MainActivity.this, UserProfileActivity.class));
-            }
-            return true;
-        });
+        startActivity(new Intent(MainActivity.this, EventsActivity.class));
+        finish();
     }
 
     public void logout() {

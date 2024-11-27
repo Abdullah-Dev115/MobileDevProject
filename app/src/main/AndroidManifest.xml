@@ -55,6 +55,15 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" />
+        <activity
+            android:name=".AddEvent"
+            android:exported="false"
+            android:label="Add Event"
+            android:parentActivityName=".EventsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".EventsActivity" />
+        </activity>
     </application>
 
 </manifest>

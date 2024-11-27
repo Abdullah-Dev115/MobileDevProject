@@ -68,20 +68,16 @@ public class Login extends AppCompatActivity {
             return;
         }
         
-        DatabaseHandler dbHandler = new DatabaseHandler(this);
-        User user = dbHandler.getUser(emailText, passwordText);
-        
-        if (user != null) {
-            // Save login state and user info
+        if (db.checkUser(emailText, passwordText)) {
+            Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
             SharedPreferences loginPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
             SharedPreferences.Editor editor = loginPreferences.edit();
             editor.putBoolean("isLoggedIn", true);
-            editor.putInt("userId", user.getId());
             editor.putString("userEmail", emailText);
             editor.apply();
             
-            // Start MainActivity
-            startActivity(new Intent(Login.this, MainActivity.class));
+            // Start EventsActivity instead of MainActivity
+            startActivity(new Intent(Login.this, EventsActivity.class));
             finish();
         } else {
             Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show();
