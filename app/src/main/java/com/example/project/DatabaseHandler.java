@@ -22,7 +22,7 @@ import java.util.List;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
     private static final String DATABASE_NAME = "lostAndFoundDB";
 
 
@@ -64,7 +64,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         try {
             // Create Users Table
-            String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS + "("
+            String CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_USERS + "("
                     + KEY_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + KEY_USERNAME + " TEXT,"
                     + KEY_EMAIL + " TEXT UNIQUE,"
@@ -74,7 +74,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     + ")";
 
             // Create Events table
-            String CREATE_EVENTS_TABLE = "CREATE TABLE " + TABLE_EVENTS + "("
+            String CREATE_EVENTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_EVENTS + "("
                     + KEY_EVENT_ID + " INTEGER PRIMARY KEY,"
                     + KEY_EVENT_TITLE + " TEXT,"
                     + KEY_EVENT_DESCRIPTION + " TEXT,"
@@ -87,7 +87,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             Log.d("DatabaseHandler", "Users table created successfully");
 
             // Create Reports Table
-            String CREATE_REPORTS_TABLE = "CREATE TABLE " + TABLE_REPORTS + "("
+            String CREATE_REPORTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_REPORTS + "("
                     + KEY_REPORT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + KEY_TITLE + " TEXT NOT NULL,"
                     + KEY_DESCRIPTION + " TEXT NOT NULL,"
@@ -107,11 +107,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop all existing tables
+//         Drop all existing tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
-        
+
         // Recreate all tables
         onCreate(db);
     }
