@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="modern_purple">#6200EE</color>
+    <color name="modern_accent">#03DAC5</color>
+    <color name="modern_background">#FFFFFF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="calm_blue">#5C9EAD</color> <!-- A soothing blue -->
+    <color name="soft_teal">#88BDBC</color> <!-- A complementary teal -->
+    <color name="soft_gray">#F0F4F8</color> <!-- A light, calming gray -->
+    <color name="off_white">#FCFCFC</color> <!-- A soft white -->
+
 </resources>

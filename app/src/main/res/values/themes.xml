@@ -3,6 +3,25 @@
     <style name="Base.Theme.Project" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <item name="colorPrimary">@color/calm_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/soft_teal</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSurface">@color/soft_gray</item>
+        <item name="colorOnSurface">@color/black</item>
+        <item name="android:windowBackground">@color/soft_gray</item>
+        <item name="colorOnBackground">@color/black</item>
+        <item name="itemBackground">@color/soft_teal</item>
+
+
+
+    </style>
+
+    <style name="BottomNavigationViewSoftTeal" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemIconTint">@color/black</item>
+        <item name="itemTextColor">@color/black</item>
+        <item name="background">@color/soft_teal</item>
     </style>
 
     <style name="Theme.Project" parent="Base.Theme.Project" />

@@ -1,0 +1,19 @@
+<!-- res/drawable/ripple_custom.xml -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/soft_teal"
+    android:radius="40dp">
+
+<item android:id="@android:id/mask">
+<shape
+    android:shape="rectangle">
+    <solid android:color="@android:color/white"/>
+</shape>
+</item>
+
+<item>
+<shape
+    android:shape="rectangle">
+    <solid android:color="@android:color/white"/>
+</shape>
+</item>
+    </ripple>
