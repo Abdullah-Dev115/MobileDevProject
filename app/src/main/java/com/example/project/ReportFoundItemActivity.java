@@ -20,7 +20,7 @@ public class ReportFoundItemActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri imageUri;
     private DatabaseHandler dbHandler;
-    private String originalItemId;
+    private Long originalItemId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +28,7 @@ public class ReportFoundItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_report_found_item);
 
         // Get the original item ID from intent
-        originalItemId = getIntent().getStringExtra("item_id");
+        originalItemId = getIntent().getLongExtra("item_id",-1);
 
         dbHandler = new DatabaseHandler(this);
 
@@ -52,51 +52,36 @@ public class ReportFoundItemActivity extends AppCompatActivity {
 
     private void submitFoundReport() {
         Log.d("ReportFoundItemActivity", "Original Item ID: " + originalItemId);
-        
+
         String location = locationFoundInput.getText().toString();
         String description = descriptionInput.getText().toString();
         String contactInfo = contactInfoInput.getText().toString();
-    
+
         if (location.isEmpty() || description.isEmpty() || contactInfo.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-    
+
         // First mark the original item as found
-        if (originalItemId != null && !originalItemId.isEmpty()) {
-            try {
-                long itemId = Long.parseLong(originalItemId);
-                Log.d("ReportFoundItemActivity", "Attempting to mark item as found: " + itemId);
-                boolean updateSuccess = dbHandler.markItemAsFound(itemId);
-                Log.d("ReportFoundItemActivity", "Update success: " + updateSuccess);
-                if (!updateSuccess) {
-                    Toast.makeText(this, "Error updating original item", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            } catch (NumberFormatException e) {
-                Log.e("ReportFoundItemActivity", "Invalid item ID: " + originalItemId);
-                Toast.makeText(this, "Error updating original item", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-    
+
+
         // Then create the found report with isFound set to true
         Report foundReport = new Report(
             "Found Item Report",
             location,
             description,  // These parameters were in wrong order
             contactInfo,
-            imageUri != null ? imageUri.toString() : null,
-            true
-    );
-    
-        long newReportId = dbHandler.addReport(foundReport);
+            imageUri != null ? imageUri.toString() : null
+                     );
+
+        long newReportId = dbHandler.addFoundReport(foundReport);
         if (newReportId == -1) {
             Toast.makeText(this, "Error creating found report", Toast.LENGTH_SHORT).show();
             return;
         }
-    
+
         Toast.makeText(this, "Found report submitted successfully", Toast.LENGTH_SHORT).show();
+        dbHandler.deleteReport(originalItemId.toString());
         startActivity(new Intent(this, FoundItemsActivity.class));
         finish();
     }

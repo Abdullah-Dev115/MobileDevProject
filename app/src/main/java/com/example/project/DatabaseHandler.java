@@ -1,11 +1,13 @@
 package com.example.project;
 
+import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -22,7 +24,7 @@ import java.util.List;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
 
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 7;
     private static final String DATABASE_NAME = "lostAndFoundDB";
 
 
@@ -46,6 +48,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
     // Reports table
+    private static final String TABLE_FOUND_REPORTS = "found_reports";
     private static final String TABLE_REPORTS = "reports";
     private static final String KEY_REPORT_ID = "id";
     private static final String KEY_TITLE = "title";
@@ -54,7 +57,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_IMAGE_PATH = "image_path";
     private static final String KEY_TIMESTAMP = "timestamp";
     private static final String KEY_CONTACT_INFO = "contact_info";
-    private static final String KEY_IS_FOUND = "is_found";
+
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION+1);
@@ -94,9 +97,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     + KEY_LOCATION + " TEXT NOT NULL,"
                     + KEY_IMAGE_PATH + " TEXT,"
                     + KEY_CONTACT_INFO + " TEXT,"
-                    + KEY_IS_FOUND + " INTEGER DEFAULT 0,"
+
                     + KEY_TIMESTAMP + " INTEGER"
                     + ")";
+            String CREATE_FOUND_REPORTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_FOUND_REPORTS + "("
+                    + KEY_REPORT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + KEY_TITLE + " TEXT NOT NULL,"
+                    + KEY_DESCRIPTION + " TEXT NOT NULL,"
+                    + KEY_LOCATION + " TEXT NOT NULL,"
+                    + KEY_IMAGE_PATH + " TEXT,"
+                    + KEY_CONTACT_INFO + " TEXT,"
+
+                    + KEY_TIMESTAMP + " INTEGER"
+                    + ")";
+            db.execSQL(CREATE_FOUND_REPORTS_TABLE);
             db.execSQL(CREATE_REPORTS_TABLE);
             Log.d("DatabaseHandler", "Reports table created successfully");
 
@@ -110,6 +124,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //         Drop all existing tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
 
         // Recreate all tables
@@ -221,7 +236,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_DESCRIPTION, description);
         values.put(KEY_LOCATION, location);
         values.put(KEY_IMAGE_PATH, imagePath);
-        values.put(KEY_IS_FOUND, 0); // 0 indicates not found
         values.put(KEY_TIMESTAMP, System.currentTimeMillis());
 
         // Insert row and get the id
@@ -253,53 +267,173 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
         return userList;
     }
-
-    public List<Report> getAllReports(boolean isFound) {
-        Log.d("DatabaseHandler", "Getting all reports with isFound = " + isFound);
+    /**
+     * Gets all lost reports
+     * @return List of lost reports
+     */
+    public List<Report> getAllLostReports() {
+        Log.d(TAG, "Fetching all lost reports");
         List<Report> reportList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_REPORTS + 
-                            " WHERE " + KEY_IS_FOUND + " = ?" +
-                            " ORDER BY " + KEY_TIMESTAMP + " DESC";
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, new String[]{isFound ? "1" : "0"});
+        try {
+            String selectQuery = "SELECT * FROM " + TABLE_REPORTS +
+                    " ORDER BY " + KEY_TIMESTAMP + " DESC";
 
-        if (cursor.moveToFirst()) {
-            do {
-                Report report = new Report();
-                report.setId(cursor.getLong(cursor.getColumnIndex(KEY_REPORT_ID)));
-                report.setTitle(cursor.getString(cursor.getColumnIndex(KEY_TITLE)));
-                report.setDescription(cursor.getString(cursor.getColumnIndex(KEY_DESCRIPTION)));
-                report.setLocation(cursor.getString(cursor.getColumnIndex(KEY_LOCATION)));
-                report.setImageUrl(cursor.getString(cursor.getColumnIndex(KEY_IMAGE_PATH)));
-                report.setContactInfo(cursor.getString(cursor.getColumnIndex(KEY_CONTACT_INFO)));
-                report.setFound(cursor.getInt(cursor.getColumnIndex(KEY_IS_FOUND)) == 1);
-                report.setTimestamp(cursor.getLong(cursor.getColumnIndex(KEY_TIMESTAMP)));
-                reportList.add(report);
-            } while (cursor.moveToNext());
+            db = this.getReadableDatabase();
+            cursor = db.rawQuery(selectQuery, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    reportList.add(createReportFromCursor(cursor));
+                } while (cursor.moveToNext());
+            }
+
+            Log.d(TAG, "Retrieved " + reportList.size() + " lost reports");
+            return reportList;
+
+        } catch (SQLException e) {
+            Log.e(TAG, "Error getting lost reports: " + e.getMessage(), e);
+            return new ArrayList<>();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        cursor.close();
-        db.close();
-        return reportList;
     }
 
-    public boolean markItemAsFound(long itemId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_IS_FOUND, 1); // 1 indicates the item is found
-    
-        Log.d("DatabaseHandler", "About to update item with ID: " + itemId);
-        
-        // Update the record
-        int rowsAffected = db.update(TABLE_REPORTS,
-                values,
-                KEY_REPORT_ID + " = ?",
-                new String[]{String.valueOf(itemId)});
-                
-        Log.d("DatabaseHandler", "Rows affected by update: " + rowsAffected);
-        db.close();
-        return rowsAffected > 0;
+    /**
+     * Gets all found reports
+     * @return List of found reports
+     */
+    public List<Report> getAllFoundReports() {
+        Log.d(TAG, "Fetching all found reports");
+        List<Report> reportList = new ArrayList<>();
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+
+        try {
+            String selectQuery = "SELECT * FROM " + TABLE_FOUND_REPORTS +
+                    " ORDER BY " + KEY_TIMESTAMP + " DESC";
+
+            db = this.getReadableDatabase();
+            cursor = db.rawQuery(selectQuery, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    reportList.add(createReportFromCursor(cursor));
+                } while (cursor.moveToNext());
+            }
+
+            Log.d(TAG, "Retrieved " + reportList.size() + " found reports");
+            return reportList;
+
+        } catch (SQLException e) {
+            Log.e(TAG, "Error getting found reports: " + e.getMessage(), e);
+            return new ArrayList<>();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
     }
+    /**
+     * Creates a Report object from cursor data
+     * @param cursor Database cursor positioned at valid row
+     * @return Report object
+     */
+    private Report createReportFromCursor(Cursor cursor) {
+        Report report = new Report();
+        try {
+            report.setId(cursor.getLong(getColumnIndexOrThrow(cursor, KEY_REPORT_ID)));
+            report.setTitle(cursor.getString(getColumnIndexOrThrow(cursor, KEY_TITLE)));
+            report.setDescription(cursor.getString(getColumnIndexOrThrow(cursor, KEY_DESCRIPTION)));
+            report.setLocation(cursor.getString(getColumnIndexOrThrow(cursor, KEY_LOCATION)));
+            report.setImageUrl(cursor.getString(getColumnIndexOrThrow(cursor, KEY_IMAGE_PATH)));
+            report.setContactInfo(cursor.getString(getColumnIndexOrThrow(cursor, KEY_CONTACT_INFO)));
+            report.setTimestamp(cursor.getLong(getColumnIndexOrThrow(cursor, KEY_TIMESTAMP)));
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Error creating report from cursor: " + e.getMessage(), e);
+        }
+        return report;
+    }
+
+    /**
+     * Safe way to get column index that handles missing columns
+     */
+    private int getColumnIndexOrThrow(Cursor cursor, String columnName) {
+        int columnIndex = cursor.getColumnIndex(columnName);
+        if (columnIndex == -1) {
+            throw new IllegalArgumentException("Column '" + columnName + "' not found in database");
+        }
+        return columnIndex;
+    }
+    /**
+     * Gets report count from specified table
+     */
+    public int getReportCount(boolean isFoundTable) {
+        String tableName = isFoundTable ? TABLE_FOUND_REPORTS : TABLE_REPORTS;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            String countQuery = "SELECT COUNT(*) FROM " + tableName;
+            cursor = db.rawQuery(countQuery, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                return cursor.getInt(0);
+            }
+            return 0;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+    public List<Report> searchReports(String query, boolean searchFoundReports) {
+        String tableName = searchFoundReports ? TABLE_FOUND_REPORTS : TABLE_REPORTS;
+        List<Report> reportList = new ArrayList<>();
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+
+        try {
+            String searchQuery = "SELECT * FROM " + tableName +
+                    " WHERE " + KEY_TITLE + " LIKE ? OR " +
+                    KEY_DESCRIPTION + " LIKE ? OR " +
+                    KEY_LOCATION + " LIKE ?" +
+                    " ORDER BY " + KEY_TIMESTAMP + " DESC";
+
+            String[] searchArgs = new String[]{"%" + query + "%",
+                    "%" + query + "%",
+                    "%" + query + "%"};
+
+            db = this.getReadableDatabase();
+            cursor = db.rawQuery(searchQuery, searchArgs);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    reportList.add(createReportFromCursor(cursor));
+                } while (cursor.moveToNext());
+            }
+
+            return reportList;
+
+        } catch (SQLException e) {
+            Log.e(TAG, "Error searching reports: " + e.getMessage(), e);
+            return new ArrayList<>();
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+    }
+
+
+
+
+
+
 
     public long addReport(Report report) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -309,34 +443,41 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_DESCRIPTION, report.getDescription());
         values.put(KEY_LOCATION, report.getLocation());
         values.put(KEY_IMAGE_PATH, report.getImageUrl());
-        values.put(KEY_CONTACT_INFO, report.getContactInfo());
-        values.put(KEY_IS_FOUND, report.isFound() ? 1 : 0);  // Convert boolean to int
+        values.put(KEY_CONTACT_INFO, report.getContactInfo());// Convert boolean to int
         values.put(KEY_TIMESTAMP, System.currentTimeMillis());
 
-        Log.d("DatabaseHandler", "Adding report - Title: " + report.getTitle() + 
-              ", isFound: " + report.isFound() + 
-              ", Location: " + report.getLocation());
+
 
         long id = db.insert(TABLE_REPORTS, null, values);
         
         // Verify the insertion
-        if (id != -1) {
-            Cursor cursor = db.query(TABLE_REPORTS,
-                    new String[]{KEY_IS_FOUND},
-                    KEY_REPORT_ID + " = ?",
-                    new String[]{String.valueOf(id)},
-                    null, null, null);
+
             
-            if (cursor.moveToFirst()) {
-                int isFoundValue = cursor.getInt(cursor.getColumnIndex(KEY_IS_FOUND));
-                Log.d("DatabaseHandler", "Verified isFound value in DB: " + isFoundValue);
-            }
-            cursor.close();
-        }
+
+
+
         
         db.close();
         return id;
     }
+    public long addFoundReport(Report report) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_TITLE, report.getTitle());
+        values.put(KEY_DESCRIPTION, report.getDescription());
+        values.put(KEY_LOCATION, report.getLocation());
+        values.put(KEY_IMAGE_PATH, report.getImageUrl());
+        values.put(KEY_CONTACT_INFO, report.getContactInfo());
+        values.put(KEY_TIMESTAMP, System.currentTimeMillis());
+
+
+
+        long id = db.insert(TABLE_FOUND_REPORTS, null, values);
+        db.close();
+        return id;
+    }
+
     public int getUserId(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         String[] columns = { KEY_USER_ID };  // Assuming KEY_USER_ID is the column for the user ID
@@ -380,5 +521,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         
         return user;
     }
+    public void deleteReport(String reportId) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            int rowsDeleted = db.delete(TABLE_REPORTS, KEY_REPORT_ID + " = ?", new String[] { reportId });
+            if (rowsDeleted > 0) {
+                Log.d("Database", "Report deleted successfully");
+            } else {
+                Log.d("Database", "is the report id" + reportId);
+            }
+            db.close();
+        }
 
-}
+    }
+
+
+

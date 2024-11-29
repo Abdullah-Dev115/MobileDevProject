@@ -5,9 +5,11 @@ import static androidx.core.content.ContextCompat.startActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -29,6 +31,7 @@ public class LostFragment extends Fragment {
     private ReportAdapter adapter;
     private DatabaseHandler dbHandler;
     private FloatingActionButton addButton;
+    private TextView titleTextView;
 
     @Nullable
     @Override
@@ -45,6 +48,8 @@ public class LostFragment extends Fragment {
         // Initialize views
         recyclerView = view.findViewById(R.id.lost_recycler_view);
         addButton = view.findViewById(R.id.add_lost_item_fab);
+        titleTextView=view.findViewById(R.id.report_title);
+
         
         // Set up RecyclerView
         adapter = new ReportAdapter(requireContext());
@@ -55,6 +60,7 @@ public class LostFragment extends Fragment {
         // Set up FAB click listener
         addButton.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), AddReportActivity.class);
+
             startActivity(intent);
         });
         
@@ -66,7 +72,7 @@ public class LostFragment extends Fragment {
         if (dbHandler == null) {
             dbHandler = new DatabaseHandler(requireContext());
         }
-        List<Report> reports = dbHandler.getAllReports(false);  // false for unfound items
+        List<Report> reports = dbHandler.getAllLostReports();  // false for unfound items
         adapter.setReports(reports);
     }
 

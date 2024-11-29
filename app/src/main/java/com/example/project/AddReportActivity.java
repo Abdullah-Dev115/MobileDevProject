@@ -73,14 +73,14 @@ public class AddReportActivity extends AppCompatActivity {
             return;
         }
 
+
         // Create a new Report object with isFound set to false
         Report report = new Report(
                 title,
                 location,
                 description,
                 "",  // No contact info for lost items
-                imagePath,
-                false  // This is a lost item
+                imagePath
         );
 
         // Save to database using the Report object version

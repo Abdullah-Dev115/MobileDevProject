@@ -7,7 +7,6 @@ public class Report {
     private String location;
     private String imageUrl;
     private String contactInfo;
-    private boolean isFound;
     private String category;
     private long timestamp;
 
@@ -26,13 +25,13 @@ public class Report {
     }
 
     // Constructor for found items report
-    public Report(String title, String location, String description, String contactInfo, String imageUrl, boolean isFound) {
+    public Report(String title, String location, String description, String contactInfo, String imageUrl) {
         this.title = title;
         this.location = location;
         this.description = description;
         this.contactInfo = contactInfo;
         this.imageUrl = imageUrl;
-        this.isFound = isFound;
+
         this.timestamp = System.currentTimeMillis();
     }
 
@@ -94,11 +93,5 @@ public class Report {
         this.contactInfo = contactInfo;
     }
 
-    public boolean isFound() {
-        return isFound;
-    }
 
-    public void setFound(boolean found) {
-        isFound = found;
-    }
 }

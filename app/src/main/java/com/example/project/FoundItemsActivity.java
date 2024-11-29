@@ -64,7 +64,7 @@ public class FoundItemsActivity extends AppCompatActivity {
     }
 
     private void loadFoundItems() {
-        List<Report> reports = dbHandler.getAllReports(true); // true for found items
+        List<Report> reports = dbHandler.getAllFoundReports(); // true for found items
         adapter.setReports(reports);
     }
 }

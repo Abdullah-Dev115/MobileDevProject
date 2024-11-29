@@ -69,7 +69,7 @@ public class LostItemsActivity extends AppCompatActivity {
 
     private void loadLostItems() {
         Log.d("LostItemsActivity", "Loading lost items");
-        List<Report> reports = dbHandler.getAllReports(false);  // false for unfound items
+        List<Report> reports = dbHandler.getAllLostReports();  // false for unfound items
         Log.d("LostItemsActivity", "Loaded " + reports.size() + " lost items");
         adapter.setReports(reports);
     }

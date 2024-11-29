@@ -3,6 +3,7 @@ package com.example.project;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,7 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
         holder.foundItemButton.setOnClickListener(v -> {
             Intent intent = new Intent(context, ReportFoundItemActivity.class);
             intent.putExtra("item_id", report.getId());
+            Log.d("checking the type", "The id provided is: " + report.getId() );
             context.startActivity(intent);
         });
         
