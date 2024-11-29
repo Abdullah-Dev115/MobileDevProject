@@ -24,7 +24,7 @@ import java.util.List;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
 
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
     private static final String DATABASE_NAME = "lostAndFoundDB";
 
 
@@ -125,7 +125,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOUND_REPORTS);
 
         // Recreate all tables
         onCreate(db);
@@ -244,29 +244,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return id;
     }
-    public List<User> getAllUsers() {
-        List<User> userList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_USERS;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
 
-        if (cursor.moveToFirst()) {
-            do {
-                User user = new User();
-                user.setId(cursor.getInt(cursor.getColumnIndex(KEY_USER_ID)));
-                user.setUsername(cursor.getString(cursor.getColumnIndex(KEY_USERNAME)));
-                user.setEmail(cursor.getString(cursor.getColumnIndex(KEY_EMAIL)));
-                user.setPassword(cursor.getString(cursor.getColumnIndex(KEY_PASSWORD)));
-                user.setPhone(cursor.getString(cursor.getColumnIndex(KEY_PHONE)));
-                user.setIsAdmin(cursor.getInt(cursor.getColumnIndex(KEY_IS_ADMIN)) == 1);
-
-                userList.add(user);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        db.close();
-        return userList;
-    }
     /**
      * Gets all lost reports
      * @return List of lost reports
@@ -372,62 +350,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Gets report count from specified table
      */
-    public int getReportCount(boolean isFoundTable) {
-        String tableName = isFoundTable ? TABLE_FOUND_REPORTS : TABLE_REPORTS;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
 
-        try {
-            String countQuery = "SELECT COUNT(*) FROM " + tableName;
-            cursor = db.rawQuery(countQuery, null);
 
-            if (cursor != null && cursor.moveToFirst()) {
-                return cursor.getInt(0);
-            }
-            return 0;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-    public List<Report> searchReports(String query, boolean searchFoundReports) {
-        String tableName = searchFoundReports ? TABLE_FOUND_REPORTS : TABLE_REPORTS;
-        List<Report> reportList = new ArrayList<>();
-        SQLiteDatabase db = null;
-        Cursor cursor = null;
-
-        try {
-            String searchQuery = "SELECT * FROM " + tableName +
-                    " WHERE " + KEY_TITLE + " LIKE ? OR " +
-                    KEY_DESCRIPTION + " LIKE ? OR " +
-                    KEY_LOCATION + " LIKE ?" +
-                    " ORDER BY " + KEY_TIMESTAMP + " DESC";
-
-            String[] searchArgs = new String[]{"%" + query + "%",
-                    "%" + query + "%",
-                    "%" + query + "%"};
-
-            db = this.getReadableDatabase();
-            cursor = db.rawQuery(searchQuery, searchArgs);
-
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    reportList.add(createReportFromCursor(cursor));
-                } while (cursor.moveToNext());
-            }
-
-            return reportList;
-
-        } catch (SQLException e) {
-            Log.e(TAG, "Error searching reports: " + e.getMessage(), e);
-            return new ArrayList<>();
-        } finally {
-            if (cursor != null && !cursor.isClosed()) {
-                cursor.close();
-            }
-        }
-    }
 
 
 
@@ -499,28 +423,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return -1;  // Return -1 if no user is found, meaning the email is invalid
     }
 
-    public User getUser(String email, String password) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        
-        String[] columns = {KEY_USER_ID, KEY_USERNAME, KEY_EMAIL, KEY_PHONE, KEY_PASSWORD, KEY_IS_ADMIN};
-        String selection = KEY_EMAIL + " = ? AND " + KEY_PASSWORD + " = ?";
-        String[] selectionArgs = {email, password};
-        
-        User user = null;
-        Cursor cursor = db.query(TABLE_USERS, columns, selection, selectionArgs, null, null, null);
-        
-        if (cursor != null && cursor.moveToFirst()) {
-            user = new User();
-            user.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_ID)));
-            user.setUsername(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USERNAME)));
-            user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL)));
-            user.setPhone(cursor.getString(cursor.getColumnIndexOrThrow(KEY_PHONE)));
-            user.setIsAdmin(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_IS_ADMIN)) == 1);
-            cursor.close();
-        }
-        
-        return user;
-    }
+
     public void deleteReport(String reportId) {
             SQLiteDatabase db = this.getWritableDatabase();
             int rowsDeleted = db.delete(TABLE_REPORTS, KEY_REPORT_ID + " = ?", new String[] { reportId });
