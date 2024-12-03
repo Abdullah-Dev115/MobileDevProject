@@ -420,7 +420,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.close();
         }
 
-        return -1;  // Return -1 if no user is found, meaning the email is invalid
+        // Return -1 if no user is found, meaning the email is invalid
+        return -1;  
     }
 
 

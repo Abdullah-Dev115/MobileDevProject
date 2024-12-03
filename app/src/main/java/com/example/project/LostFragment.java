@@ -44,8 +44,7 @@ public class LostFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
-        // Initialize views
+
         recyclerView = view.findViewById(R.id.lost_recycler_view);
         addButton = view.findViewById(R.id.add_lost_item_fab);
         titleTextView=view.findViewById(R.id.report_title);
