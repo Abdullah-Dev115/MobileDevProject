@@ -16,7 +16,8 @@ public class UserProfileActivity extends AppCompatActivity {
     private TextView phoneText;
     private Button logoutButton;
     private BottomNavigationView bottomNavigationView;
-    private SharedPreferences sharedPreferences;
+    private DatabaseHandler dbHandler;
+    private SharedPreferences loginPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,16 +31,10 @@ public class UserProfileActivity extends AppCompatActivity {
         logoutButton = findViewById(R.id.logout_button);
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
-        // Initialize SharedPreferences
-        sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        // Initialize DatabaseHandler and SharedPreferences
+        dbHandler = new DatabaseHandler(this);
+        loginPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
         
-        // Debug: Print all SharedPreferences values
-        Map<String, ?> allPrefs = sharedPreferences.getAll();
-        Log.d("UserProfileActivity", "All SharedPreferences values:");
-        for (Map.Entry<String, ?> entry : allPrefs.entrySet()) {
-            Log.d("UserProfileActivity", entry.getKey() + ": " + entry.getValue().toString());
-        }
-
         // Load user data
         loadUserData();
         
@@ -51,30 +46,20 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void loadUserData() {
-        // Get default values in case data is not found
-        String defaultUsername = "No username set";
-        String defaultEmail = "No email set";
-        String defaultPhone = "No phone number set";
-
-        // Get the data with defaults if not found
-        String username = sharedPreferences.getString("username", defaultUsername);
-        String email = sharedPreferences.getString("email", defaultEmail);
-        String phone = sharedPreferences.getString("phone", defaultPhone);
-
-        // Debug logging
-        Log.d("UserProfileActivity", "Loading user data:");
-        Log.d("UserProfileActivity", "Username: " + username);
-        Log.d("UserProfileActivity", "Email: " + email);
-        Log.d("UserProfileActivity", "Phone: " + phone);
-
-        // Set the text with proper null checking
-        usernameText.setText(username != null ? username : defaultUsername);
-        emailText.setText(email != null ? email : defaultEmail);
-        phoneText.setText(phone != null ? phone : defaultPhone);
+        String userEmail = loginPreferences.getString("userEmail", null);
+        if (userEmail != null) {
+            User user = dbHandler.getUserByEmail(userEmail);
+            if (user != null) {
+                usernameText.setText(user.getUsername());
+                emailText.setText(user.getEmail());
+                phoneText.setText(user.getPhone());
+            }
+        }
     }
 
     private void logout() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        // Clear login preferences
+        SharedPreferences.Editor editor = loginPreferences.edit();
         editor.clear();
         editor.apply();
 

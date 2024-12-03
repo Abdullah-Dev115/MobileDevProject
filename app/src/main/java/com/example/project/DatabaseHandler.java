@@ -435,6 +435,36 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             db.close();
         }
 
+    public User getUserByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        User user = null;
+        
+        String[] columns = {
+            KEY_USER_ID,
+            KEY_USERNAME,
+            KEY_EMAIL,
+            KEY_PHONE,
+            KEY_IS_ADMIN
+        };
+        
+        String selection = KEY_EMAIL + " = ?";
+        String[] selectionArgs = {email};
+        
+        Cursor cursor = db.query(TABLE_USERS, columns, selection, selectionArgs, null, null, null);
+        
+        if (cursor != null && cursor.moveToFirst()) {
+            user = new User();
+            user.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_ID)));
+            user.setUsername(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USERNAME)));
+            user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(KEY_EMAIL)));
+            user.setPhone(cursor.getString(cursor.getColumnIndexOrThrow(KEY_PHONE)));
+            user.setIsAdmin(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_IS_ADMIN)) == 1);
+            cursor.close();
+        }
+        
+        return user;
+    }
+
     }
 
 
