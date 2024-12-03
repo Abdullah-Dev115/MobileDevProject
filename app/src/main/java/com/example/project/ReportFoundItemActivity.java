@@ -62,14 +62,10 @@ public class ReportFoundItemActivity extends AppCompatActivity {
             return;
         }
 
-        // First mark the original item as found
-
-
-        // Then create the found report with isFound set to true
         Report foundReport = new Report(
             "Found Item Report",
             location,
-            description,  // These parameters were in wrong order
+            description,
             contactInfo,
             imageUri != null ? imageUri.toString() : null
                      );

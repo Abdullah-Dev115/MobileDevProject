@@ -26,12 +26,10 @@ public class FoundItemsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.found_recycler_view);
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
-        // Set up RecyclerView
         adapter = new FoundReportAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // Set up bottom navigation
         bottomNavigationView.setSelectedItemId(R.id.found_items);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -43,7 +41,7 @@ public class FoundItemsActivity extends AppCompatActivity {
                 startActivity(new Intent(FoundItemsActivity.this, LostItemsActivity.class));
                 finish();
             } else if (itemId == R.id.found_items) {
-                return true; // Do nothing, we're already here
+                return true; // Do nothing
             } else if (itemId == R.id.report_item) {
                 startActivity(new Intent(FoundItemsActivity.this, ReportItemActivity.class));
                 finish();

@@ -38,7 +38,6 @@ public class UserProfileActivity extends AppCompatActivity {
         // Load user data
         loadUserData();
         
-        // Set up bottom navigation
         setupBottomNavigation();
 
         // Set up logout button click

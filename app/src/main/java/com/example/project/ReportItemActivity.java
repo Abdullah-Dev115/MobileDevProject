@@ -47,8 +47,7 @@ public class ReportItemActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // Set up bottom navigation
-        bottomNavigationView.setSelectedItemId(R.id.report_item); // Set current tab as selected
+        bottomNavigationView.setSelectedItemId(R.id.report_item);
         
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -62,7 +61,7 @@ public class ReportItemActivity extends AppCompatActivity {
                 startActivity(new Intent(ReportItemActivity.this, FoundItemsActivity.class));
                 finish();
             } else if (itemId == R.id.report_item) {
-                return true; // Do nothing, we're already here
+                return true; // Do nothing
             } else if (itemId == R.id.profile) {
                 startActivity(new Intent(ReportItemActivity.this, UserProfileActivity.class));
                 finish();
@@ -70,7 +69,6 @@ public class ReportItemActivity extends AppCompatActivity {
             return true;
         });
 
-        // Set up FAB click listener
         addReportFab.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddReportActivity.class);
             startActivity(intent);
