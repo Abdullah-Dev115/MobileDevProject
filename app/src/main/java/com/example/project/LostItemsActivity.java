@@ -3,9 +3,6 @@ package com.example.project;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,7 +33,7 @@ public class LostItemsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         
         // Set up bottom navigation
-        bottomNavigationView.setSelectedItemId(R.id.lost_items); // Set current tab as selected
+        bottomNavigationView.setSelectedItemId(R.id.lost_items);
         
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -44,7 +41,7 @@ public class LostItemsActivity extends AppCompatActivity {
                 startActivity(new Intent(LostItemsActivity.this, EventsActivity.class));
                 finish();
             } else if (itemId == R.id.lost_items) {
-                return true; // Do nothing, we're already here
+                return true; // Do nothing
             } else if (itemId == R.id.found_items) {
                 startActivity(new Intent(LostItemsActivity.this, FoundItemsActivity.class));
                 finish();

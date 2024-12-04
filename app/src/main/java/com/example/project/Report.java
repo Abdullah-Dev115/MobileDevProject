@@ -84,7 +84,6 @@ public class Report {
         this.timestamp = timestamp;
     }
 
-    // Add getters and setters for new fields
     public String getContactInfo() {
         return contactInfo;
     }

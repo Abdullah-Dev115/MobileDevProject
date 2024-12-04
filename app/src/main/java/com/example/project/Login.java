@@ -26,22 +26,10 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-
-
         setContentView(R.layout.activity_login);
 
         db = new DatabaseHandler(this);
-        // Check if the admin user already exists
 
-
-//        long result=db.addUser("Admin User", "admin", "admin", "987654321", true);
-//
-//        if (result > 0) {
-//            Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
-//
-//        } else {
-//            Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show();
-//        }
         initViews();
         
         loginBtn.setOnClickListener(v -> loginUser());
@@ -69,7 +57,6 @@ public class Login extends AppCompatActivity {
         }
 
         if (db.checkUser(emailText, passwordText)) {
-            // Assuming db.getUserId() method returns the userId based on the email
             int userId = db.getUserId(emailText); // Retrieve userId based on the email
 
             Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
@@ -82,7 +69,6 @@ public class Login extends AppCompatActivity {
             editor.putInt("userId", userId);  // Save the userId
             editor.apply();
 
-            // Start MainActivity
             startActivity(new Intent(Login.this, MainActivity.class));
             finish();
         } else {

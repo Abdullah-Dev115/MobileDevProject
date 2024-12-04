@@ -418,7 +418,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.close();
         }
 
+
         return -1;
+
     }
 
 
