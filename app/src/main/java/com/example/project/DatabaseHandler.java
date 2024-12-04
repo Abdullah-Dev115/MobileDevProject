@@ -66,7 +66,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         try {
-            // Create Users Table
+
             String CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_USERS + "("
                     + KEY_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + KEY_USERNAME + " TEXT,"
@@ -76,7 +76,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     + KEY_IS_ADMIN + " INTEGER"  // Default to 0 (not an admin)
                     + ")";
 
-            // Create Events table
+
             String CREATE_EVENTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_EVENTS + "("
                     + KEY_EVENT_ID + " INTEGER PRIMARY KEY,"
                     + KEY_EVENT_TITLE + " TEXT,"
@@ -89,7 +89,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             db.execSQL(CREATE_EVENTS_TABLE);
             Log.d("DatabaseHandler", "Users table created successfully");
 
-            // Create Reports Table
+
             String CREATE_REPORTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_REPORTS + "("
                     + KEY_REPORT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + KEY_TITLE + " TEXT NOT NULL,"
@@ -121,13 +121,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//         Drop all existing tables
+
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOUND_REPORTS);
 
-        // Recreate all tables
+
         onCreate(db);
     }
 
@@ -139,9 +139,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_EMAIL, email);
         values.put(KEY_PASSWORD, password);
         values.put(KEY_PHONE, phone);
-        values.put(KEY_IS_ADMIN, isAdmin ? 1 : 0);  // Store boolean as integer (1 = true, 0 = false)
+        values.put(KEY_IS_ADMIN, isAdmin ? 1 : 0);
 
-        // Insert row, return the row ID or -1 if there was an error
+
         long result = db.insert(TABLE_USERS, null, values);
         db.close();
         return result;
@@ -174,24 +174,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 return isAdmin == 1;  // If is_admin is 1, user is an admin
             }
         } catch (Exception e) {
-            e.printStackTrace();  // Log any unexpected exceptions
+            e.printStackTrace();
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
-        return false;  // Default to false if no record is found or an error occurs
+        return false;
     }
 
     public List<Event> getAllEvents() {
         List<Event> eventList = new ArrayList<Event>();
-        // Select All Query
+
         String selectQuery = "SELECT * FROM " + TABLE_EVENTS;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        // Looping through all rows and adding to list
+
         if (cursor.moveToFirst()) {
             do {
                 Event event = new Event();
@@ -205,10 +205,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
 
-        // Closing the cursor
+
         cursor.close();
 
-        // Return event list
+
         return eventList;
     }
 
@@ -373,8 +373,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
         long id = db.insert(TABLE_REPORTS, null, values);
-        
-        // Verify the insertion
 
             
 
@@ -404,14 +402,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public int getUserId(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns = { KEY_USER_ID };  // Assuming KEY_USER_ID is the column for the user ID
-        String selection = KEY_EMAIL + " = ?";  // Assuming KEY_USER_EMAIL is the column for email
+        String[] columns = { KEY_USER_ID };
+        String selection = KEY_EMAIL + " = ?";
         String[] selectionArgs = { email };
 
         Cursor cursor = db.query(TABLE_USERS, columns, selection, selectionArgs, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            int userId = cursor.getInt(cursor.getColumnIndex(KEY_USER_ID));  // Retrieve the userId
+            int userId = cursor.getInt(cursor.getColumnIndex(KEY_USER_ID));
             cursor.close();
             return userId;
         }
@@ -420,7 +418,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.close();
         }
 
-        return -1;  // Return -1 if no user is found, meaning the email is invalid
+        return -1;
     }
 
 

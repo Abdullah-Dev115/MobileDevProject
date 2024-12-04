@@ -43,16 +43,16 @@ public class EventsActivity extends AppCompatActivity {
         int loggedInUserId = getLoggedInUserId(this);  // Get the logged-in user's ID
 
         if (loggedInUserId != -1) {
-            // Now you can check if the logged-in user is an admin
+
             if (databaseHandler.isAdmin(loggedInUserId)) {
-                // Show the FAB for admin users
+
                 addEventFab.setVisibility(View.VISIBLE);
             } else {
-                // Hide the FAB for non-admin users
+
                 addEventFab.setVisibility(View.GONE);
             }
         } else {
-            // No user is logged in, handle accordingly (e.g., show login screen)
+
             Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show();
         }
 
@@ -64,12 +64,12 @@ public class EventsActivity extends AppCompatActivity {
             startActivityForResult(intent,1);
         });
 
-        // Initialize event list and adapter
+
         eventList = new ArrayList<>();
         adapter = new EventsAdapter(eventList);
         recyclerView.setAdapter(adapter);
 
-        // Load events (add dummy data or fetch from DB)
+
         loadEvents();
 
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
@@ -100,22 +100,22 @@ public class EventsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            // Refresh the event list
-            loadEvents();  // Call the method to reload events from the database
+
+            loadEvents();
         }
     }
 
     private void loadEvents() {
-        // Dummy data for testing
+
         List<Event> events = databaseHandler.getAllEvents();
 
-        // Clear the list before adding new events
+
         eventList.clear();
 
-        // Add the fetched events to the eventList
+
         if (events != null && !events.isEmpty()) {
             eventList.addAll(events);
-            // Notify the adapter of data changes
+
             adapter.notifyDataSetChanged();
         } else {
             Toast.makeText(this, "No events available", Toast.LENGTH_SHORT).show();

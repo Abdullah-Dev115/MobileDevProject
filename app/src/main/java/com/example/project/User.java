@@ -8,7 +8,6 @@ public class User {
     private String phone;
     private boolean isAdmin;
 
-    // Constructor
     public User() {}
 
     public User(int id, String username, String email, String password, String phone, boolean isAdmin) {
@@ -20,7 +19,6 @@ public class User {
         this.isAdmin = isAdmin;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }

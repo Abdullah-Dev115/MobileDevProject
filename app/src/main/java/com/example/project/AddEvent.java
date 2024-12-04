@@ -26,7 +26,7 @@ public class AddEvent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
 
-        // Initialize views
+
         eventTitleInput = findViewById(R.id.event_title_input);
         eventDescriptionInput = findViewById(R.id.event_description_input);
         selectDateButton = findViewById(R.id.select_date_button);
@@ -34,7 +34,7 @@ public class AddEvent extends AppCompatActivity {
         submitEventButton = findViewById(R.id.submit_event_button);
         eventTimestampDisplay = findViewById(R.id.event_timestamp_display);
 
-        // Setup Toolbar
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -43,7 +43,7 @@ public class AddEvent extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        // Set listeners for buttons
+
         selectDateButton.setOnClickListener(v -> showDatePicker());
         selectTimeButton.setOnClickListener(v -> showTimePicker());
         submitEventButton.setOnClickListener(v -> submitEvent());
@@ -52,7 +52,7 @@ public class AddEvent extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            setResult(RESULT_OK);  // Notify that an event was added
+            setResult(RESULT_OK);
             finish();
             return true;
         }
@@ -61,7 +61,7 @@ public class AddEvent extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        setResult(RESULT_OK);  // Notify the previous activity to refresh
+        setResult(RESULT_OK);
         super.onBackPressed();
     }
 
@@ -108,7 +108,7 @@ public class AddEvent extends AppCompatActivity {
 
         Toast.makeText(this, "Event added successfully!", Toast.LENGTH_SHORT).show();
 
-        setResult(RESULT_OK);  // Notify the previous activity to refresh
+        setResult(RESULT_OK);
         finish();
     }
 }

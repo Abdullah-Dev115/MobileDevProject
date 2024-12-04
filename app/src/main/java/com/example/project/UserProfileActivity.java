@@ -31,17 +31,17 @@ public class UserProfileActivity extends AppCompatActivity {
         logoutButton = findViewById(R.id.logout_button);
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
-        // Initialize DatabaseHandler and SharedPreferences
+
         dbHandler = new DatabaseHandler(this);
         loginPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
         
-        // Load user data
+
         loadUserData();
         
-        // Set up bottom navigation
+
         setupBottomNavigation();
 
-        // Set up logout button click
+
         logoutButton.setOnClickListener(v -> logout());
     }
 
@@ -58,12 +58,12 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void logout() {
-        // Clear login preferences
+
         SharedPreferences.Editor editor = loginPreferences.edit();
         editor.clear();
         editor.apply();
 
-        // Redirect to login activity
+
         Intent intent = new Intent(this, Login.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

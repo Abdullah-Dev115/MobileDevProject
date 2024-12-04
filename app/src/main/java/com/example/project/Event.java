@@ -7,17 +7,17 @@ public class Event {
     private String timestamp;
     private int adminId;
 
-    // Default constructor
+
     public Event() {}
 
-    // Constructor for creating new events
+
     public Event(String title, String description, String timestamp) {
         this.title = title;
         this.description = description;
         this.timestamp = timestamp;
     }
 
-    // Constructor with all fields
+
     public Event(int id, String title, String description, String timestamp, int adminId) {
         this.id = id;
         this.title = title;
@@ -26,7 +26,7 @@ public class Event {
         this.adminId = adminId;
     }
 
-    // Getters and Setters
+
     public int getId() {
         return id;
     }
